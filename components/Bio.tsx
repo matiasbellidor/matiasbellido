@@ -22,12 +22,12 @@ export default function Bio() {
     {
       number: "03",
       title: t.bio.categories.dev,
-      skills: ["Git / GitHub", "Obsidian", "Microsoft Office"],
+      skills: ["Git / GitHub", "Obsidian", "Microsoft Office", "Notion"],
     },
     {
       number: "04",
       title: t.bio.categories.prof,
-      skills: [t.bio.englishSkill],
+      skills: [t.bio.englishSkill, "Data Storytelling"],
     },
   ];
 
