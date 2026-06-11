@@ -76,12 +76,18 @@ export default function ScrollBackground() {
 
     const isDark = () => document.documentElement.classList.contains("dark");
 
-    /* Centro vertical absoluto (en píxeles de documento) de una sección */
-    const centerOf = (id: string): number | null => {
-      const el = document.getElementById(id);
-      if (!el) return null;
-      const rect = el.getBoundingClientRect();
-      return window.scrollY + rect.top + rect.height / 2;
+    /* Centro vertical absoluto (en píxeles de documento) de una sección.
+       Acepta una lista de ids y usa el primero que exista en el DOM —
+       p. ej. la sección de habilidades puede llamarse "skills" o "bio". */
+    const centerOf = (ids: string[]): number | null => {
+      for (const id of ids) {
+        const el = document.getElementById(id);
+        if (el) {
+          const rect = el.getBoundingClientRect();
+          return window.scrollY + rect.top + rect.height / 2;
+        }
+      }
+      return null;
     };
 
     const paint = () => {
@@ -99,15 +105,15 @@ export default function ScrollBackground() {
          por acordeones, carruseles o modales). Si una sección no existe,
          simplemente se omite y el fundido sigue funcionando. */
       const candidates: Array<[number | null, RGB]> = [
-        [centerOf("home") ?? window.innerHeight / 2, palette.hero],
-        [centerOf("skills"), palette.mid],
-        [centerOf("projects"), palette.mid], // meseta: skills y projects comparten color
-        [centerOf("experience"), palette.end],
+        [centerOf(["home"]) ?? window.innerHeight / 2, palette.hero],
+        [centerOf(["skills", "bio"]), palette.mid],
+        [centerOf(["projects"]), palette.mid], // meseta: skills y projects comparten color
+        [centerOf(["experience"]), palette.end],
       ];
 
-      const anchors = candidates.filter(
-        (a): a is [number, RGB] => a[0] !== null
-      );
+      const anchors = candidates
+        .filter((a): a is [number, RGB] => a[0] !== null)
+        .sort((a, b) => a[0] - b[0]);
 
       const [r, g, b] = colorAt(viewCenter, anchors);
       layer.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;

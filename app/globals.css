@@ -59,11 +59,23 @@ html {
 
 html,
 body {
-  background: var(--bg);
   color: var(--fg);
   -webkit-font-smoothing: antialiased;
   transition: background-color 0.4s ease, color 0.4s ease;
   overflow-x: hidden;
+}
+
+/* El color base vive en <html>: pinta DEBAJO de la capa de
+   ScrollBackground (z-index negativo) y sirve de respaldo
+   durante la carga inicial. */
+html {
+  background: var(--bg);
+}
+
+/* El <body> queda transparente: si tuviera fondo propio, taparía
+   la capa animada de ScrollBackground. */
+body {
+  background: transparent;
 }
 
 /* MOBILE: Eliminate 300ms tap delay */
@@ -76,6 +88,15 @@ button,
 a {
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
+}
+
+/* ── Feedback de presión (tap/click) ──
+   Micro escala hacia adentro al presionar cualquier elemento
+   interactivo, estilo iOS. Los elementos con `transition-all`
+   la animan suave; el resto responde al instante. Cero JS. */
+a:active,
+button:active {
+  transform: scale(0.96);
 }
 
 /* Hide scrollbar but keep scroll functional (for horizontal carousels) */

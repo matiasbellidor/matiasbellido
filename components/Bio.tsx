@@ -1,12 +1,16 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Quote } from "lucide-react";
 import Section from "./Section";
 import { useLanguage } from "@/context/LanguageContext";
 
+/* Curva de easing premium (la misma del Hero) */
+const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
+
 export default function Bio() {
   const { t } = useLanguage();
+  const reduced = !!useReducedMotion();
 
   const skillCategories = [
     {
@@ -31,17 +35,35 @@ export default function Bio() {
     },
   ];
 
+  /* Stagger de entrada (mismo lenguaje de movimiento que el Hero):
+     las 4 categorías aparecen en cascada al llegar con el scroll */
+  const container = {
+    hidden: {},
+    show: {
+      transition: { staggerChildren: reduced ? 0 : 0.12 },
+    },
+  };
+
+  const fadeUp = {
+    hidden: { opacity: 0, y: reduced ? 0 : 28 },
+    show: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: reduced ? 0.3 : 0.7, ease: EASE },
+    },
+  };
+
   return (
     <Section id="bio" eyebrow={t.bio.eyebrow} title={t.bio.title}>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-12 mb-24">
-        {skillCategories.map((category, i) => (
-          <motion.div
-            key={category.title}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: i * 0.1 }}
-          >
+      <motion.div
+        variants={container}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, margin: "-80px" }}
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-12 mb-24"
+      >
+        {skillCategories.map((category) => (
+          <motion.div key={category.title} variants={fadeUp}>
             <div className="mb-5">
               <div className="flex items-center gap-3 mb-2">
                 <span className="text-sm font-mono text-cyan/60">{category.number}</span>
@@ -64,13 +86,13 @@ export default function Bio() {
             </div>
           </motion.div>
         ))}
-      </div>
+      </motion.div>
 
       <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.8 }}
+        variants={fadeUp}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, margin: "-80px" }}
         className="relative max-w-4xl mx-auto"
       >
         <div className="flex items-center justify-center mb-12">

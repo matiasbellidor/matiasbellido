@@ -1,7 +1,12 @@
 "use client";
 
+import { motion, useReducedMotion } from "framer-motion";
 import { Mail, MapPin, Linkedin, Github, Phone, ArrowUpRight } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
+import Magnetic from "@/components/Magnetic";
+
+/* Curva de easing premium (la misma del Hero) */
+const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
 const GMAIL_COMPOSE_URL =
   "https://mail.google.com/mail/?view=cm&fs=1&to=rbellidomatias@gmail.com&su=Colaboremos";
@@ -11,23 +16,60 @@ const GMAIL_BASIC_URL =
 
 export default function Footer() {
   const { t } = useLanguage();
+  const reduced = !!useReducedMotion();
+
+  /* Stagger de entrada al hacer scroll hasta la sección:
+     eyebrow → título → texto → tarjetas → CTA → redes → firma */
+  const container = {
+    hidden: {},
+    show: {
+      transition: { staggerChildren: reduced ? 0 : 0.12 },
+    },
+  };
+
+  const fadeUp = {
+    hidden: { opacity: 0, y: reduced ? 0 : 28 },
+    show: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: reduced ? 0.3 : 0.7, ease: EASE },
+    },
+  };
 
   return (
     <footer id="contact" className="px-6 md:px-16 py-16 border-t border-white/5">
-      <div className="max-w-4xl mx-auto text-center">
-        <p className="text-sm uppercase tracking-[0.3em] text-cyan mb-4">
+      <motion.div
+        variants={container}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, margin: "-80px" }}
+        className="max-w-4xl mx-auto text-center"
+      >
+        <motion.p
+          variants={fadeUp}
+          className="text-sm uppercase tracking-[0.3em] text-cyan mb-4"
+        >
           {t.footer.eyebrow}
-        </p>
+        </motion.p>
 
-        <h2 className="font-display text-5xl md:text-7xl font-bold gradient-text mb-6">
+        <motion.h2
+          variants={fadeUp}
+          className="font-display text-5xl md:text-7xl font-bold gradient-text mb-6"
+        >
           {t.footer.title}
-        </h2>
+        </motion.h2>
 
-        <p className="text-xl text-fg-soft max-w-xl mx-auto mb-10 leading-relaxed">
+        <motion.p
+          variants={fadeUp}
+          className="text-xl text-fg-soft max-w-xl mx-auto mb-10 leading-relaxed"
+        >
           {t.footer.desc}
-        </p>
+        </motion.p>
 
-        <div className="grid sm:grid-cols-2 gap-4 mb-10 max-w-2xl mx-auto">
+        <motion.div
+          variants={fadeUp}
+          className="grid sm:grid-cols-2 gap-4 mb-10 max-w-2xl mx-auto"
+        >
           <a
             href={GMAIL_BASIC_URL}
             target="_blank"
@@ -55,53 +97,68 @@ export default function Footer() {
             </div>
             <ArrowUpRight className="w-4 h-4 text-fg-muted group-hover:text-cyan transition-all" />
           </a>
-        </div>
+        </motion.div>
 
-        <a
-          href={GMAIL_COMPOSE_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-3 px-8 py-4 rounded-full bg-electric text-white font-medium text-base hover:shadow-glow-lg transition-all group"
+        {/* CTA principal con efecto magnético (igual que "Ver Proyectos") */}
+        <motion.div variants={fadeUp}>
+          <Magnetic strength={0.3}>
+            <a
+              href={GMAIL_COMPOSE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-3 px-8 py-4 rounded-full bg-electric text-white font-medium text-base hover:shadow-glow-lg transition-all group"
+            >
+              <Mail className="w-5 h-5" />
+              {t.footer.cta}
+              <ArrowUpRight className="w-5 h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+            </a>
+          </Magnetic>
+        </motion.div>
+
+        {/* Redes sociales con efecto magnético (igual que en el Hero) */}
+        <motion.div
+          variants={fadeUp}
+          className="flex items-center justify-center gap-3 mt-10"
         >
-          <Mail className="w-5 h-5" />
-          {t.footer.cta}
-          <ArrowUpRight className="w-5 h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-        </a>
+          <Magnetic strength={0.45}>
+            <a
+              href="https://www.linkedin.com/in/matiasbellido"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="glass p-3 rounded-full hover:text-cyan hover:shadow-glow transition-all"
+              aria-label="LinkedIn"
+            >
+              <Linkedin className="w-5 h-5" />
+            </a>
+          </Magnetic>
+          <Magnetic strength={0.45}>
+            <a
+              href="https://github.com/rbellidomatias-spec"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="glass p-3 rounded-full hover:text-cyan hover:shadow-glow transition-all"
+              aria-label="GitHub"
+            >
+              <Github className="w-5 h-5" />
+            </a>
+          </Magnetic>
+          <Magnetic strength={0.45}>
+            <a
+              href="https://wa.me/message/RRG5RHLSINR3M1"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="glass p-3 rounded-full hover:text-cyan hover:shadow-glow transition-all"
+              aria-label="WhatsApp"
+            >
+              <Phone className="w-5 h-5" />
+            </a>
+          </Magnetic>
+        </motion.div>
 
-        <div className="flex items-center justify-center gap-3 mt-10">
-          <a
-            href="https://www.linkedin.com/in/matiasbellido"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="glass p-3 rounded-full hover:text-cyan hover:shadow-glow transition-all"
-            aria-label="LinkedIn"
-          >
-            <Linkedin className="w-5 h-5" />
-          </a>
-          <a
-            href="https://github.com/rbellidomatias-spec"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="glass p-3 rounded-full hover:text-cyan hover:shadow-glow transition-all"
-            aria-label="GitHub"
-          >
-            <Github className="w-5 h-5" />
-          </a>
-          <a
-            href="https://wa.me/message/RRG5RHLSINR3M1"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="glass p-3 rounded-full hover:text-cyan hover:shadow-glow transition-all"
-            aria-label="WhatsApp"
-          >
-            <Phone className="w-5 h-5" />
-          </a>
-        </div>
-
-        <p className="text-sm text-fg-faint mt-12">
+        <motion.p variants={fadeUp} className="text-sm text-fg-faint mt-12">
           Portfolio - Matías Rodrigo Bellido
-        </p>
-      </div>
+        </motion.p>
+      </motion.div>
     </footer>
   );
 }
