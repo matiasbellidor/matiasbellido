@@ -1,157 +1,108 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
+import {
+  motion,
+  useScroll,
+  useTransform,
+  useReducedMotion,
+  type MotionValue,
+} from "framer-motion";
 
 /* ═════════════════════════════════════════════════════════════
-   SCROLL-TRIGGERED BACKGROUND TRANSITION
+   SCROLL REVEAL TEXT
 
-   Capa fija detrás de todo el contenido cuyo color se interpola
-   en función de scrollY. El recorrido cromático es:
+   Revela un párrafo palabra por palabra atado a la posición del
+   scroll: cada palabra "cae" a su lugar a medida que bajás, y el
+   efecto se rebobina solo cuando subís (es scrubbing 1:1 con el
+   scroll, no una animación disparada una vez).
 
-   DARK:   Midnight Blue → Deep Indigo → Dark Teal
-   LIGHT:  Blanco puro   → Ice Blue    → Pearl Grey
+   Cómo funciona:
+   - useScroll mide el progreso del párrafo dentro del viewport
+     (0 cuando entra por abajo, 1 cuando ya se leyó).
+   - A cada palabra se le asigna una franja de ese progreso, y su
+     opacidad + caída (y) se interpolan dentro de esa franja.
+   - Debajo hay una copia "fantasma" del texto al 20% de opacidad,
+     para que el bloque mantenga su forma y se intuya lo que viene.
 
-   Anclas (centro vertical de cada sección, medido en vivo):
-   home → color 1 | skills → color 2 | projects → color 2 (meseta)
-   experience → color 3 | de ahí en adelante → color 3
+   Performance: la animación es por PALABRA y no por letra a
+   propósito — este párrafo tiene ~90 palabras vs ~600 letras, y
+   600 spans animados por frame es jank garantizado en mobile.
+   A velocidad de lectura el resultado visual es el mismo.
 
-   Performance:
-   - Listener de scroll `passive` + throttle con requestAnimationFrame
-     (se pinta como máximo 1 vez por frame, nunca más).
-   - Cero estado de React: se escribe backgroundColor directo al DOM
-     vía ref, así no hay re-renders por scroll.
-   - Un MutationObserver detecta el toggle dark/light y repinta.
+   Uso (el texto sigue viniendo de LanguageContext):
+   <ScrollRevealText text={t.projects.intro} className="..." />
    ═════════════════════════════════════════════════════════════ */
 
-type RGB = [number, number, number];
-
-const SCROLL_PALETTE: Record<"dark" | "light", { hero: RGB; mid: RGB; end: RGB }> = {
-  dark: {
-    hero: [2, 8, 20], // Midnight Blue (#020814)
-    mid: [17, 10, 40], // Deep Indigo (#110A28)
-    end: [4, 20, 24], // Dark Teal (#041418)
-  },
-  light: {
-    hero: [255, 255, 255], // Blanco puro
-    mid: [234, 243, 251], // Ice Blue (#EAF3FB)
-    end: [243, 244, 246], // Pearl Grey (#F3F4F6)
-  },
-};
-
-const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
-
-const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
-
-const mix = (c1: RGB, c2: RGB, t: number): RGB => [
-  Math.round(lerp(c1[0], c2[0], t)),
-  Math.round(lerp(c1[1], c2[1], t)),
-  Math.round(lerp(c1[2], c2[2], t)),
-];
-
-/* Interpolación por tramos: dado un punto del scroll y una lista de
-   anclas [posición, color], devuelve el color fundido entre las dos
-   anclas que lo rodean. Antes de la primera o después de la última,
-   devuelve el color puro correspondiente. */
-function colorAt(pos: number, anchors: Array<[number, RGB]>): RGB {
-  if (anchors.length === 0) return [0, 0, 0];
-  if (pos <= anchors[0][0]) return anchors[0][1];
-
-  for (let i = 0; i < anchors.length - 1; i++) {
-    const [p1, c1] = anchors[i];
-    const [p2, c2] = anchors[i + 1];
-    if (pos <= p2) {
-      const t = p2 === p1 ? 1 : clamp01((pos - p1) / (p2 - p1));
-      return mix(c1, c2, t);
-    }
-  }
-
-  return anchors[anchors.length - 1][1];
-}
-
-export default function ScrollBackground() {
-  const layerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    let ticking = false;
-
-    const isDark = () => document.documentElement.classList.contains("dark");
-
-    /* Centro vertical absoluto (en píxeles de documento) de una sección.
-       Acepta una lista de ids y usa el primero que exista en el DOM —
-       p. ej. la sección de habilidades puede llamarse "skills" o "bio". */
-    const centerOf = (ids: string[]): number | null => {
-      for (const id of ids) {
-        const el = document.getElementById(id);
-        if (el) {
-          const rect = el.getBoundingClientRect();
-          return window.scrollY + rect.top + rect.height / 2;
-        }
-      }
-      return null;
-    };
-
-    const paint = () => {
-      ticking = false;
-      const layer = layerRef.current;
-      if (!layer) return;
-
-      const palette = SCROLL_PALETTE[isDark() ? "dark" : "light"];
-
-      /* El punto de referencia es el centro del viewport: el fundido
-         queda anclado a lo que el usuario está mirando, no al borde. */
-      const viewCenter = window.scrollY + window.innerHeight / 2;
-
-      /* Anclas medidas en vivo (toleran secciones que cambien de altura
-         por acordeones, carruseles o modales). Si una sección no existe,
-         simplemente se omite y el fundido sigue funcionando. */
-      const candidates: Array<[number | null, RGB]> = [
-        [centerOf(["home"]) ?? window.innerHeight / 2, palette.hero],
-        [centerOf(["skills", "bio"]), palette.mid],
-        [centerOf(["projects"]), palette.mid], // meseta: skills y projects comparten color
-        [centerOf(["experience"]), palette.end],
-      ];
-
-      const anchors = candidates
-        .filter((a): a is [number, RGB] => a[0] !== null)
-        .sort((a, b) => a[0] - b[0]);
-
-      const [r, g, b] = colorAt(viewCenter, anchors);
-      layer.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
-    };
-
-    /* Throttle por frame: por más eventos de scroll que lleguen,
-       se pinta una sola vez por refresco de pantalla. */
-    const requestPaint = () => {
-      if (!ticking) {
-        ticking = true;
-        requestAnimationFrame(paint);
-      }
-    };
-
-    window.addEventListener("scroll", requestPaint, { passive: true });
-    window.addEventListener("resize", requestPaint, { passive: true });
-
-    /* Repinta al instante cuando se togglea el tema (clase .dark en <html>) */
-    const observer = new MutationObserver(requestPaint);
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["class"],
-    });
-
-    paint(); // primer pintado al montar
-
-    return () => {
-      window.removeEventListener("scroll", requestPaint);
-      window.removeEventListener("resize", requestPaint);
-      observer.disconnect();
-    };
-  }, []);
+function Word({
+  children,
+  progress,
+  range,
+}: {
+  children: string;
+  progress: MotionValue<number>;
+  range: [number, number];
+}) {
+  const opacity = useTransform(progress, range, [0, 1]);
+  const y = useTransform(progress, range, [-14, 0]);
 
   return (
-    <div
-      ref={layerRef}
-      aria-hidden="true"
-      className="fixed inset-0 -z-10 pointer-events-none"
-    />
+    <span className="relative inline-block">
+      {/* Copia fantasma: mantiene el layout y deja entrever el texto */}
+      <span aria-hidden="true" className="opacity-20">
+        {children}
+      </span>
+      {/* Palabra real: cae y aparece según el scroll */}
+      <motion.span style={{ opacity, y }} className="absolute left-0 top-0">
+        {children}
+      </motion.span>
+    </span>
+  );
+}
+
+export default function ScrollRevealText({
+  text,
+  className = "",
+}: {
+  text: string;
+  className?: string;
+}) {
+  const ref = useRef<HTMLParagraphElement>(null);
+  const reduced = !!useReducedMotion();
+
+  /* Progreso: 0 cuando el tope del párrafo entra al 90% del viewport,
+     1 cuando su final pasa el 60% — se termina de leer antes de que
+     el bloque salga de pantalla. */
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start 0.9", "end 0.6"],
+  });
+
+  const words = text.split(" ");
+
+  /* Accesibilidad: con "reducir movimiento" activo, texto plano */
+  if (reduced) {
+    return (
+      <p ref={ref} className={className}>
+        {text}
+      </p>
+    );
+  }
+
+  return (
+    <p ref={ref} className={className}>
+      {words.map((word, i) => {
+        const step = 1 / words.length;
+        const start = i * step;
+        return (
+          <span key={`${word}-${i}`}>
+            <Word progress={scrollYProgress} range={[start, start + step]}>
+              {word}
+            </Word>
+            {i < words.length - 1 ? " " : ""}
+          </span>
+        );
+      })}
+    </p>
   );
 }

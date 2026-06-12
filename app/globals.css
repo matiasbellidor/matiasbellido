@@ -136,12 +136,25 @@ button:active {
   transition: border-color 0.3s ease, box-shadow 0.3s ease, background 0.4s ease;
 }
 
+/* ── Gradiente de títulos: ahora ANIMADO en toda la página ──
+   Todos los títulos de sección que usan .gradient-text (Habilidades,
+   Proyectos, Experiencia, Educación, Colaboremos) fluyen con el mismo
+   movimiento que el nombre en el Hero. */
 .gradient-text {
-  background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-mid) 50%, var(--gradient-end) 100%);
+  background: linear-gradient(
+    100deg,
+    var(--gradient-start) 0%,
+    var(--gradient-mid) 30%,
+    var(--gradient-end) 50%,
+    var(--gradient-mid) 70%,
+    var(--gradient-start) 100%
+  );
+  background-size: 250% 100%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   color: transparent;
+  animation: name-gradient-flow 9s ease-in-out infinite;
 }
 
 /* ── Gradiente animado del nombre (Hero) ──
@@ -332,6 +345,7 @@ section[id] {
    apagamos las animaciones decorativas en loop */
 @media (prefers-reduced-motion: reduce) {
   .aurora-blob,
+  .gradient-text,
   .gradient-text-animated {
     animation: none;
   }
