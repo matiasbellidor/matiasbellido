@@ -183,7 +183,7 @@ export default function Projects() {
               <h3 className="font-display text-2xl md:text-3xl font-bold mb-3 text-cyan">{t.projects.symbiosis.title}</h3>
               <p className="text-sm text-white/70 leading-relaxed mb-4">{t.projects.symbiosis.desc}</p>
               <div className="flex flex-wrap gap-2 pt-3 border-t border-white/5">
-                {["Claude", "OpenClaw", "Research", "Python"].map((tag) => <span key={tag} className="text-[10px] px-2.5 py-1 rounded-full bg-electric/10 text-cyan border border-cyan/20">{tag}</span>)}
+                {["Python Backend", "LLM API Integration", "Streamlit UI", "RAG (Retrieval-Augmented Generation)"].map((tag) => <span key={tag} className="text-[10px] px-2.5 py-1 rounded-full bg-electric/10 text-cyan border border-cyan/20">{tag}</span>)}
               </div>
             </div>
           </motion.div>
