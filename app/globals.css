@@ -5,26 +5,28 @@
 /* LIGHT MODE (default) */
 :root {
   --bg: #ffffff;
-  --bg-alt: #f5f7fb;
-  --fg: #0a0a0a;
-  --fg-soft: #4a5568;
-  --fg-muted: #718096;
-  --fg-faint: #a0aec0;
-  --border-soft: rgba(0, 136, 204, 0.18);
-  --border-strong: rgba(0, 136, 204, 0.4);
-  --glass-bg-1: rgba(255, 255, 255, 0.05);
-  --glass-bg-2: rgba(255, 255, 255, 0.03);
-  --glass-border: rgba(0, 136, 204, 0.2);
-  --glass-hover-border: rgba(0, 136, 204, 0.55);
-  --glass-shadow: 0 4px 24px rgba(0, 102, 255, 0.08);
-  --gradient-start: #0066ff;
-  --gradient-mid: #0088cc;
-  --gradient-end: #003d80;
-  --grid-line: rgba(0, 102, 255, 0.05);
-  --grid-glow: rgba(0, 102, 255, 0.06);
-  --accent-cyan: #0088cc;
-  --nav-border-bottom: rgba(0, 102, 255, 0.28);
-  --aurora-opacity: 0.45;
+  --bg-alt: #f1f5f9;
+  --fg: #1a1a1a;
+  --fg-soft: #374151;
+  --fg-muted: #4b5563;
+  --fg-faint: #6b7280;
+  --border-soft: rgba(21, 128, 61, 0.18);
+  --border-strong: rgba(21, 128, 61, 0.4);
+  --glass-bg-1: rgba(21, 128, 61, 0.05);
+  --glass-bg-2: rgba(21, 128, 61, 0.02);
+  --glass-border: rgba(21, 128, 61, 0.25);
+  --glass-hover-border: rgba(21, 128, 61, 0.55);
+  --glass-shadow: 0 4px 24px rgba(21, 128, 61, 0.1);
+  --gradient-start: #166534;
+  --gradient-mid: #15803d;
+  --gradient-end: #14532d;
+  --grid-line: rgba(21, 128, 61, 0.06);
+  --grid-glow: rgba(21, 128, 61, 0.07);
+  --accent-cyan: 21 128 61; /* Forest Green 700 — formato RGB para soportar /alpha */
+  --accent-electric: 22 101 52; /* Green 800 (botón principal) */
+  --nav-border-bottom: rgba(21, 128, 61, 0.3);
+  --aurora-opacity: 0.4;
+  --modal-overlay-bg: rgba(15, 23, 42, 0.45);
 }
 
 /* DARK MODE */
@@ -47,9 +49,11 @@
   --gradient-end: #0066ff;
   --grid-line: rgba(0, 229, 255, 0.04);
   --grid-glow: rgba(0, 102, 255, 0.12);
-  --accent-cyan: #00e5ff;
+  --accent-cyan: 0 229 255; /* Cyan — formato RGB para soportar /alpha */
+  --accent-electric: 0 102 255; /* Electric blue */
   --nav-border-bottom: rgba(0, 229, 255, 0.35);
   --aurora-opacity: 0.6;
+  --modal-overlay-bg: rgba(0, 0, 0, 0.85);
 }
 
 html {
@@ -122,6 +126,25 @@ button:active {
   display: none; /* Chrome, Safari, Opera */
 }
 
+/* ── Superficie de modal (Proyectos) ──
+   A diferencia de .glass (semi-transparente), esta es OPACA y usa
+   el color de fondo del tema: blanco en light, negro en dark. Así
+   el contenido del modal nunca deja ver el overlay de atrás. */
+.modal-surface {
+  background: var(--bg);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 20px 70px rgba(0, 0, 0, 0.45);
+  transition: background 0.4s ease, border-color 0.3s ease;
+}
+
+/* Overlay detrás del modal: oscuro en dark, gris translúcido en
+   light (para no tapar con negro puro sobre fondo claro). */
+.modal-overlay {
+  background: var(--modal-overlay-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
 .glass {
   background: linear-gradient(135deg, var(--glass-bg-1) 0%, var(--glass-bg-2) 100%);
   backdrop-filter: blur(16px);
@@ -133,7 +156,7 @@ button:active {
 
 .glass:hover {
   border-color: var(--glass-hover-border);
-  box-shadow: 0 0 40px rgba(0, 102, 255, 0.15);
+  box-shadow: 0 0 40px rgb(var(--accent-cyan) / 0.15);
 }
 
 /* ── Navbar: glassmorphism pronunciado ──
@@ -287,7 +310,7 @@ button:active {
 }
 
 ::selection {
-  background: rgba(0, 136, 204, 0.3);
+  background: rgb(var(--accent-cyan) / 0.3);
   color: var(--fg);
 }
 

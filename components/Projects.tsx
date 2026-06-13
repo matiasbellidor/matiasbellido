@@ -47,7 +47,7 @@ function RichDescription({ text }: { text: string }) {
           <div key={idx}>
             {headerLine && <p className="text-base md:text-lg text-cyan font-semibold mb-3">{headerLine}</p>}
             {contentLines.map((line, lineIdx) => (
-              <p key={lineIdx} className={`text-sm md:text-base text-fg-soft leading-relaxed ${line.startsWith("•") ? "pl-4 mb-1.5" : "mb-2"}`}>{line}</p>
+              <p key={lineIdx} className={`text-sm md:text-base text-fg leading-relaxed ${line.startsWith("•") ? "pl-4 mb-1.5" : "mb-2"}`}>{line}</p>
             ))}
           </div>
         );
@@ -213,17 +213,17 @@ export default function Projects() {
       <AnimatePresence>
         {expandedProject && (
           <>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setExpandedId(null)} className="fixed inset-0 z-[60] bg-black/85 backdrop-blur-md" />
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setExpandedId(null)} className="fixed inset-0 z-[60] modal-overlay" />
             <div className="fixed inset-0 z-[70] flex items-center justify-center p-3 md:p-8 pointer-events-none">
               <motion.div initial={{ opacity: 0, scale: 0.92, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.92, y: 20 }} transition={{ duration: 0.35 }}
-                className="glass rounded-3xl overflow-hidden w-full max-w-5xl max-h-[95vh] md:max-h-[90vh] flex flex-col pointer-events-auto shadow-glow-lg">
+                className="modal-surface rounded-3xl overflow-hidden w-full max-w-5xl max-h-[95vh] md:max-h-[90vh] flex flex-col pointer-events-auto">
                 <div className="absolute top-3 right-3 md:top-4 md:right-4 z-50 flex items-center gap-2">
-                  <button onClick={handleModalLangToggle} className="flex items-center gap-1.5 px-3 py-2.5 rounded-full bg-black/60 backdrop-blur-sm hover:bg-cyan/20 border border-white/10 transition-all touch-manipulation">
+                  <button onClick={handleModalLangToggle} className="flex items-center gap-1.5 px-3 py-2.5 rounded-full glass hover:bg-cyan/20 transition-all touch-manipulation">
                     <Languages className="w-4 h-4 text-cyan" />
-                    <span className="text-xs uppercase text-white">{lang}</span>
+                    <span className="text-xs uppercase text-fg">{lang}</span>
                   </button>
-                  <button onClick={() => setExpandedId(null)} className="p-2.5 rounded-full bg-black/60 backdrop-blur-sm hover:bg-cyan/20 border border-white/10 transition-all touch-manipulation">
-                    <X className="w-5 h-5 text-white" />
+                  <button onClick={() => setExpandedId(null)} className="p-2.5 rounded-full glass hover:bg-cyan/20 transition-all touch-manipulation">
+                    <X className="w-5 h-5 text-fg" />
                   </button>
                 </div>
                 <div className="overflow-y-auto">
@@ -234,9 +234,9 @@ export default function Projects() {
                     <AnimatePresence mode="wait">
                       <motion.div key={`${expandedProject.id}-${lang}`} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.25 }}>
                         <p className="text-xs uppercase tracking-[0.2em] text-cyan mb-4">{expandedProject.date} - {expandedProject.category}</p>
-                        <h3 className="font-display text-3xl md:text-5xl font-bold mb-6 text-cyan">{expandedProject.title}</h3>
+                        <h3 className="font-display text-3xl md:text-5xl font-bold mb-6 gradient-text">{expandedProject.title}</h3>
                         <RichDescription text={expandedProject.desc} />
-                        <div className="flex flex-wrap gap-3 pt-6 border-t border-white/10">
+                        <div className="flex flex-wrap gap-3 pt-6 border-t border-cyan/20">
                           {expandedProject.tags.map((tag: string) => <span key={tag} className="text-xs px-4 py-2 rounded-full bg-electric/10 text-cyan border border-cyan/30">{tag}</span>)}
                         </div>
                       </motion.div>

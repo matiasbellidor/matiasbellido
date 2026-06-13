@@ -79,7 +79,7 @@ export default function Bio() {
               {category.skills.map((skill) => (
                 <span
                   key={skill}
-                  className="text-base px-4 py-2.5 rounded-full bg-electric/10 text-cyan border border-cyan/30 hover:border-cyan/70 hover:bg-electric/20 hover:scale-105 transition-all duration-300 cursor-default font-medium"
+                  className="text-base px-4 py-2.5 rounded-full bg-cyan/[0.08] text-cyan border border-cyan/40 hover:border-cyan/70 hover:bg-cyan/[0.15] hover:scale-105 transition-all duration-300 cursor-default font-medium"
                 >
                   {skill}
                 </span>

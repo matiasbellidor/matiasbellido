@@ -10,16 +10,20 @@ const config: Config = {
     extend: {
       colors: {
         background: "#000000",
-        electric: "#0066FF",
-        cyan: "#00E5FF",
+        /* Apuntan a variables que viran con el tema:
+           dark = cyan/azul (igual que antes), light = verde bosque.
+           Formato rgb(var / <alpha>) para que funcionen los
+           modificadores de opacidad (text-cyan/30, bg-electric/10). */
+        electric: "rgb(var(--accent-electric) / <alpha-value>)",
+        cyan: "rgb(var(--accent-cyan) / <alpha-value>)",
       },
       fontFamily: {
         sans: ["var(--font-inter)", "system-ui", "sans-serif"],
         display: ["var(--font-jakarta)", "system-ui", "sans-serif"],
       },
       boxShadow: {
-        glow: "0 0 24px rgba(0, 229, 255, 0.35)",
-        "glow-lg": "0 0 60px rgba(0, 102, 255, 0.45)",
+        glow: "0 0 24px rgb(var(--accent-cyan) / 0.35)",
+        "glow-lg": "0 0 60px rgb(var(--accent-electric) / 0.45)",
       },
       backdropBlur: {
         xs: "2px",
