@@ -191,7 +191,7 @@ export const translations: Record<Lang, Dict> = {
           tags: ["CRM", "Análisis de funnels", "B2B/B2C"],
         },
         {
-          period: "Feb 2024 - Abr 2024",
+          period: "Feb 2024 - Ago 2024",
           role: "Consultor Comercial",
           company: "FIAT Argentina",
           type: "Jornada completa - Presencial",
@@ -378,7 +378,7 @@ export const translations: Record<Lang, Dict> = {
           tags: ["CRM", "Funnel Analysis", "B2B/B2C"],
         },
         {
-          period: "Feb 2024 - Apr 2024",
+          period: "Feb 2024 - Aug 2024",
           role: "Sales Consultant",
           company: "FIAT Argentina",
           type: "Full-time - On-site",
