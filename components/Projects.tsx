@@ -5,6 +5,7 @@ import Image from "next/image";
 import { motion, AnimatePresence, useAnimation, type MotionProps } from "framer-motion";
 import { Lock, Clock, X, Mail, Languages, Code2, Briefcase, ExternalLink, FileText } from "lucide-react";
 import Section from "./Section";
+import RevealText from "@/components/RevealText";
 import { useLanguage } from "@/context/LanguageContext";
 import { useModal } from "@/context/ModalContext";
 
@@ -142,10 +143,10 @@ export default function Projects() {
 
   return (
     <Section id="projects" eyebrow={t.projects.eyebrow} title={t.projects.title}>
-      <motion.p initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-50px" }} transition={{ duration: 0.6 }}
-        className="max-w-4xl mx-auto text-base md:text-lg text-fg-soft leading-relaxed text-center mb-16">
-        {t.projects.sectionDesc}
-      </motion.p>
+      <RevealText
+        text={t.projects.sectionDesc}
+        className="max-w-4xl mx-auto text-base md:text-lg text-fg-soft leading-relaxed text-left mb-16"
+      />
 
       <div className="mb-20">
         <div className="flex items-center gap-3 mb-8">
@@ -188,7 +189,7 @@ export default function Projects() {
             </div>
           </motion.div>
 
-          <div className="grid grid-flow-col grid-rows-[auto_auto] gap-6 auto-cols-[82%] sm:auto-cols-[calc(50%_-_0.75rem)] overflow-x-scroll pt-2 pb-4 [scrollbar-width:thin] [scrollbar-color:rgb(34_211_238_/_0.6)_rgb(255_255_255_/_0.08)] [&::-webkit-scrollbar]:h-2.5 [&::-webkit-scrollbar-track]:bg-white/5 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-thumb]:bg-cyan/50 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:bg-cyan/70">
+          <div className="grid grid-flow-col grid-rows-[auto_auto] gap-6 auto-cols-[82%] sm:auto-cols-[calc(50%_-_0.75rem)] overflow-x-scroll pt-2 pb-4 scroll-fade-x">
             {digitalProjects.map((project, i) => (
               <ProjectCard key={project.id} project={project} index={i} onClick={() => setExpandedId(project.id)} lang={lang} onAsesoramientosClick={() => setCanvaModalOpen(true)} onNexstockClick={() => setNexstockModalOpen(true)} variant="carousel" />
             ))}
@@ -235,7 +236,7 @@ export default function Projects() {
                         <h3 className="font-display text-3xl md:text-5xl font-bold mb-6 text-cyan">{expandedProject.title}</h3>
                         <RichDescription text={expandedProject.desc} />
                         <div className="flex flex-wrap gap-3 pt-6 border-t border-white/10">
-                          {expandedProject.tags.map((tag) => <span key={tag} className="text-xs px-4 py-2 rounded-full bg-electric/10 text-cyan border border-cyan/30">{tag}</span>)}
+                          {expandedProject.tags.map((tag: string) => <span key={tag} className="text-xs px-4 py-2 rounded-full bg-electric/10 text-cyan border border-cyan/30">{tag}</span>)}
                         </div>
                       </motion.div>
                     </AnimatePresence>

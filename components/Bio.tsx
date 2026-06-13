@@ -128,4 +128,4 @@ export default function Bio() {
       </div>
     </Section>
   );
-}
+} 
