@@ -8,10 +8,12 @@ import ScrollBackground from "@/components/ScrollBackground";
 
 export default function Home() {
   return (
-    <main id="top" className="relative min-h-screen grid-bg overflow-hidden">
-      {/* Capa de fondo interpolada por scroll: vive detrás de todo
-          el contenido y de la grilla decorativa */}
+    <main id="top" className="relative min-h-screen overflow-hidden">
+      {/* Capa 1 (fondo): color interpolado por scroll */}
       <ScrollBackground />
+      {/* Capa 2: grilla decorativa, transparente, sobre el color */}
+      <div className="fixed inset-0 z-0 grid-bg pointer-events-none" aria-hidden="true" />
+      {/* Capa 3 (arriba de todo): contenido */}
       <Header />
       <div className="relative z-10">
         <Hero />

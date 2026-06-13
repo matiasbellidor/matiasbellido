@@ -54,6 +54,7 @@ type Dict = {
   };
   hero: {
     badge: string;
+    location: string;
     titleLine1: string;
     titleLine2: string;
     desc: string;
@@ -115,6 +116,8 @@ type Dict = {
     locationLabel: string;
     location: string;
     cta: string;
+    tagline: string;
+    rights: string;
   };
 };
 
@@ -132,6 +135,7 @@ export const translations: Record<Lang, Dict> = {
     },
     hero: {
       badge: "Actuario & Data Scientist",
+      location: "CABA, Argentina",
       titleLine1: "Hola! Soy",
       titleLine2: "Matías Bellido",
       desc: "Soy estudiante de Actuario y autodidacta en Data Science, enfocado en cerrar la brecha entre el análisis teórico y la ejecución práctica. Me mueve la curiosidad por emprender proyectos que desafíen lo convencional y el deseo constante de aprender. Creo en la capacidad de transformar problemas complejos en soluciones humanas y funcionales que tengan un impacto real.",
@@ -303,6 +307,8 @@ export const translations: Record<Lang, Dict> = {
       locationLabel: "Ubicación",
       location: "CABA, Argentina",
       cta: "Colaboremos - Enviar Email",
+      tagline: "Actuario & Data Scientist · IA, Automatización y Estrategia de Negocios",
+      rights: "© 2026 Matías Rodrigo Bellido. Todos los derechos reservados.",
     },
   },
 
@@ -319,6 +325,7 @@ export const translations: Record<Lang, Dict> = {
     },
     hero: {
       badge: "Actuary & Data Scientist",
+      location: "Buenos Aires, Argentina",
       titleLine1: "Hi! I'm",
       titleLine2: "Matías Bellido",
       desc: "I'm an Actuarial student and self-taught Data Scientist, focused on bridging the gap between theoretical analysis and practical execution. Driven by curiosity to take on unconventional projects and a constant desire to learn. I believe in transforming complex problems into human, functional solutions that create real impact.",
@@ -485,6 +492,8 @@ export const translations: Record<Lang, Dict> = {
       locationLabel: "Location",
       location: "Buenos Aires, Argentina",
       cta: "Let's Collaborate - Send Email",
+      tagline: "Actuary & Data Scientist · AI, Automation, and Business Strategy",
+      rights: "© 2026 Matías Rodrigo Bellido. All rights reserved.",
     },
   },
 };

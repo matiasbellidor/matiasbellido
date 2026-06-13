@@ -1,119 +1,108 @@
 "use client";
 
-import { useRef } from "react";
-import {
-  motion,
-  useScroll,
-  useTransform,
-  useReducedMotion,
-  type MotionValue,
-} from "framer-motion";
+import { useEffect, useRef } from "react";
 
 /* ═════════════════════════════════════════════════════════════
-   SCROLL REVEAL TEXT
+   SCROLL BACKGROUND — versión robusta (listener manual)
 
-   Revela un párrafo palabra por palabra atado a la posición del
-   scroll: cada palabra "cae" a su lugar a medida que bajás, y el
-   efecto se rebobina solo cuando subís (es scrubbing 1:1 con el
-   scroll, no una animación disparada una vez).
+   Por qué esta versión y no useScroll:
+   useScroll() de Framer Motion mide el scroll del window. Si en
+   tu layout el que scrollea es un contenedor interno (o si hay
+   cualquier duda), scrollYProgress se queda en 0 y el color no
+   cambia. Esta versión calcula el progreso a mano a partir de
+   document.scrollingElement, que refleja el scroll real de la
+   página sin importar la estructura — es a prueba de balas.
 
-   Cómo funciona:
-   - useScroll mide el progreso del párrafo dentro del viewport
-     (0 cuando entra por abajo, 1 cuando ya se leyó).
-   - A cada palabra se le asigna una franja de ese progreso, y su
-     opacidad + caída (y) se interpolan dentro de esa franja.
-   - Debajo hay una copia "fantasma" del texto al 20% de opacidad,
-     para que el bloque mantenga su forma y se intuya lo que viene.
+   Recorrido (Opción B — cierre en Charcoal Black):
+   DARK:   Midnight Blue -> Deep Indigo -> Charcoal Black
+   LIGHT:  Blanco puro   -> Ice Blue    -> Pearl Grey
 
-   Performance: la animación es por PALABRA y no por letra a
-   propósito — este párrafo tiene ~90 palabras vs ~600 letras, y
-   600 spans animados por frame es jank garantizado en mobile.
-   A velocidad de lectura el resultado visual es el mismo.
-
-   Uso (el texto sigue viniendo de LanguageContext):
-   <ScrollRevealText text={t.projects.intro} className="..." />
+   Performance:
+   - Listener de scroll passive + throttle con requestAnimationFrame.
+   - Escribe backgroundColor directo al DOM via ref: cero re-renders.
+   - MutationObserver repinta al togglear dark/light.
    ═════════════════════════════════════════════════════════════ */
 
-function Word({
-  children,
-  progress,
-  range,
-}: {
-  children: string;
-  progress: MotionValue<number>;
-  range: [number, number];
-}) {
-  const opacity = useTransform(progress, range, [0, 1]);
-  const y = useTransform(progress, range, [-14, 0]);
+type RGB = [number, number, number];
 
-  return (
-    <span className="relative inline-block">
-      {/* Copia fantasma: mantiene el layout y deja entrever el texto */}
-      <span aria-hidden="true" className="opacity-20">
-        {children}
-      </span>
-      {/* Palabra real: cae y aparece según el scroll */}
-      <motion.span style={{ opacity, y }} className="absolute left-0 top-0">
-        {children}
-      </motion.span>
-    </span>
-  );
+const PALETTES: Record<"dark" | "light", { a: RGB; b: RGB; c: RGB }> = {
+  dark: {
+    a: [5, 10, 28], // Midnight Blue
+    b: [10, 38, 82], // Deep Ocean Blue (Proyectos)
+    c: [16, 24, 32], // Charcoal Black
+  },
+  light: {
+    a: [248, 250, 252], // Casi blanco
+    b: [205, 222, 240], // Azul hielo (perceptible)
+    c: [214, 219, 226], // Gris perla
+  },
+};
+
+const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
+const lerp = (x: number, y: number, t: number) => Math.round(x + (y - x) * t);
+
+function colorAt(prog: number, a: RGB, b: RGB, c: RGB): RGB {
+  if (prog <= 0.5) {
+    const t = prog / 0.5;
+    return [lerp(a[0], b[0], t), lerp(a[1], b[1], t), lerp(a[2], b[2], t)];
+  }
+  const t = (prog - 0.5) / 0.5;
+  return [lerp(b[0], c[0], t), lerp(b[1], c[1], t), lerp(b[2], c[2], t)];
 }
 
-export default function ScrollRevealText({
-  text,
-  className = "",
-}: {
-  text: string;
-  className?: string;
-}) {
-  const ref = useRef<HTMLParagraphElement>(null);
-  const reduced = !!useReducedMotion();
+export default function ScrollBackground() {
+  const ref = useRef<HTMLDivElement>(null);
 
-  /* Progreso: 0 cuando el tope del párrafo entra al 90% del viewport,
-     1 cuando su final pasa el 60% — se termina de leer antes de que
-     el bloque salga de pantalla. */
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start 0.9", "end 0.6"],
-  });
+  useEffect(() => {
+    let ticking = false;
 
-  /* Blindaje: si la prop `text` llega vacía o indefinida (p. ej. una
-     clave inexistente en LanguageContext), no renderizamos nada en vez
-     de romper el prerender con `undefined.split`. */
-  if (typeof text !== "string" || text.length === 0) {
-    console.warn(
-      "ScrollRevealText: la prop `text` llegó vacía o indefinida. " +
-        "Revisá que la clave usada exista en LanguageContext.tsx."
-    );
-    return null;
-  }
+    const isDark = () => document.documentElement.classList.contains("dark");
 
-  const words = text.split(" ");
+    const paint = () => {
+      ticking = false;
+      const el = ref.current;
+      if (!el) return;
 
-  /* Accesibilidad: con "reducir movimiento" activo, texto plano */
-  if (reduced) {
-    return (
-      <p ref={ref} className={className}>
-        {text}
-      </p>
-    );
-  }
+      const doc = document.scrollingElement || document.documentElement;
+      const max = doc.scrollHeight - doc.clientHeight;
+      const prog = max > 0 ? clamp01(doc.scrollTop / max) : 0;
+
+      const p = isDark() ? PALETTES.dark : PALETTES.light;
+      const [r, g, b] = colorAt(prog, p.a, p.b, p.c);
+      el.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
+    };
+
+    const onScroll = () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(paint);
+      }
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
+
+    const observer = new MutationObserver(paint);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    paint();
+
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      observer.disconnect();
+    };
+  }, []);
 
   return (
-    <p ref={ref} className={className}>
-      {words.map((word, i) => {
-        const step = 1 / words.length;
-        const start = i * step;
-        return (
-          <span key={`${word}-${i}`}>
-            <Word progress={scrollYProgress} range={[start, start + step]}>
-              {word}
-            </Word>
-            {i < words.length - 1 ? " " : ""}
-          </span>
-        );
-      })}
-    </p>
+    <div
+      ref={ref}
+      aria-hidden="true"
+      className="fixed inset-0 z-0 pointer-events-none"
+      style={{ backgroundColor: "rgb(2, 8, 20)" }}
+    />
   );
 }

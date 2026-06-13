@@ -9,7 +9,7 @@ import {
   useMotionTemplate,
   useReducedMotion,
 } from "framer-motion";
-import { Sparkles, ArrowDown, Linkedin, Github, Phone } from "lucide-react";
+import { Sparkles, ArrowDown, Linkedin, Github, Phone, MapPin } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import Magnetic, { useHasFinePointer } from "@/components/Magnetic";
 
@@ -173,8 +173,11 @@ export default function Hero() {
             variants={fadeUp}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass text-sm uppercase tracking-widest text-cyan"
           >
-            <Sparkles className="w-4 h-4" />
-            {t.hero.badge}
+            <Sparkles className="w-4 h-4 shrink-0" />
+            <span>{t.hero.badge}</span>
+            <span className="text-cyan/40">|</span>
+            <MapPin className="w-4 h-4 shrink-0" />
+            <span>{t.hero.location}</span>
           </motion.div>
 
           <motion.h1

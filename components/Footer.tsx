@@ -1,25 +1,36 @@
 "use client";
 
+import { useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { Mail, MapPin, Linkedin, Github, Phone, ArrowUpRight } from "lucide-react";
+import { Mail, MapPin, Linkedin, Github, Phone, ArrowUpRight, Copy, Check } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import Magnetic from "@/components/Magnetic";
 
 /* Curva de easing premium (la misma del Hero) */
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
-const GMAIL_COMPOSE_URL =
-  "https://mail.google.com/mail/?view=cm&fs=1&to=rbellidomatias@gmail.com&su=Colaboremos";
-
-const GMAIL_BASIC_URL =
-  "https://mail.google.com/mail/?view=cm&fs=1&to=rbellidomatias@gmail.com";
+const EMAIL = "rbellidomatias@gmail.com";
+const MAILTO_URL = `mailto:${EMAIL}`;
+const MAPS_URL =
+  "https://www.google.com/maps/place/Buenos+Aires/@-34.615796,-58.5156997,12z/data=!3m1!4b1!4m6!3m5!1s0x95bcca3b4ef90cbd:0xa0b3812e88e88e87!8m2!3d-34.6036739!4d-58.3821215!16zL20vMDFseTVt";
 
 export default function Footer() {
   const { t } = useLanguage();
   const reduced = !!useReducedMotion();
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(EMAIL);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      /* Si el navegador bloquea el portapapeles, no rompemos nada */
+    }
+  };
 
   /* Stagger de entrada al hacer scroll hasta la sección:
-     eyebrow → título → texto → tarjetas → CTA → redes → firma */
+     eyebrow → título → texto → tarjetas → redes */
   const container = {
     hidden: {},
     show: {
@@ -70,22 +81,38 @@ export default function Footer() {
           variants={fadeUp}
           className="grid sm:grid-cols-2 gap-4 mb-10 max-w-2xl mx-auto"
         >
-          <a
-            href={GMAIL_BASIC_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="glass rounded-xl p-5 flex items-center gap-4 text-left hover:shadow-glow transition-all group"
-          >
-            <Mail className="w-5 h-5 text-cyan shrink-0" />
-            <div className="flex-1 min-w-0">
-              <p className="text-xs uppercase tracking-wider text-fg-muted">{t.footer.emailLabel}</p>
-              <p className="text-base truncate text-fg">rbellidomatias@gmail.com</p>
-            </div>
-            <ArrowUpRight className="w-4 h-4 text-fg-muted group-hover:text-cyan transition-all" />
-          </a>
+          {/* Tarjeta de Email = CTA principal.
+             Estructura: la tarjeta entera es un enlace mailto, con un
+             botón de copiar SEPARADO (no anidado, para HTML válido).
+             Borde de acento cyan + hover marcado para cargar el peso
+             visual que dejó el botón azul eliminado. */}
+          <div className="relative glass rounded-xl p-5 flex items-center gap-4 text-left border border-cyan/30 hover:border-cyan/60 hover:shadow-glow transition-all group">
+            <a
+              href={MAILTO_URL}
+              className="flex items-center gap-4 flex-1 min-w-0"
+              aria-label={`Enviar email a ${EMAIL}`}
+            >
+              <Mail className="w-5 h-5 text-cyan shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="text-xs uppercase tracking-wider text-fg-muted">{t.footer.emailLabel}</p>
+                <p className="text-base truncate text-fg group-hover:text-cyan transition-colors">{EMAIL}</p>
+              </div>
+            </a>
+            <button
+              onClick={handleCopy}
+              aria-label={copied ? "Email copiado" : "Copiar email"}
+              className="shrink-0 p-2 rounded-lg hover:bg-cyan/10 transition-colors touch-manipulation"
+            >
+              {copied ? (
+                <Check className="w-4 h-4 text-cyan" />
+              ) : (
+                <Copy className="w-4 h-4 text-fg-muted hover:text-cyan transition-colors" />
+              )}
+            </button>
+          </div>
 
           <a
-            href="https://www.google.com/maps/place/Buenos+Aires/@-34.615796,-58.5156997,12z/data=!3m1!4b1!4m6!3m5!1s0x95bcca3b4ef90cbd:0xa0b3812e88e88e87!8m2!3d-34.6036739!4d-58.3821215!16zL20vMDFseTVt"
+            href={MAPS_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="glass rounded-xl p-5 flex items-center gap-4 text-left hover:shadow-glow transition-all group"
@@ -99,26 +126,10 @@ export default function Footer() {
           </a>
         </motion.div>
 
-        {/* CTA principal con efecto magnético (igual que "Ver Proyectos") */}
-        <motion.div variants={fadeUp}>
-          <Magnetic strength={0.3}>
-            <a
-              href={GMAIL_COMPOSE_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-3 px-8 py-4 rounded-full bg-electric text-white font-medium text-base hover:shadow-glow-lg transition-all group"
-            >
-              <Mail className="w-5 h-5" />
-              {t.footer.cta}
-              <ArrowUpRight className="w-5 h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-            </a>
-          </Magnetic>
-        </motion.div>
-
         {/* Redes sociales con efecto magnético (igual que en el Hero) */}
         <motion.div
           variants={fadeUp}
-          className="flex items-center justify-center gap-3 mt-10"
+          className="flex items-center justify-center gap-3"
         >
           <Magnetic strength={0.45}>
             <a
@@ -154,11 +165,64 @@ export default function Footer() {
             </a>
           </Magnetic>
         </motion.div>
-
-        <motion.p variants={fadeUp} className="text-sm text-fg-faint mt-12">
-          Portfolio - Matías Rodrigo Bellido
-        </motion.p>
       </motion.div>
+
+      {/* ── Franja inferior absoluta: nombre, bio y enlaces de texto ── */}
+      <div className="max-w-5xl mx-auto mt-16 pt-10 border-t border-white/10">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-8">
+          {/* Nombre + bio */}
+          <div className="text-center md:text-left">
+            <p className="font-display text-xl font-bold text-fg">
+              Matías Rodrigo Bellido
+            </p>
+            <p className="text-sm text-fg-soft mt-1">
+              {t.footer.tagline}
+            </p>
+          </div>
+
+          {/* Enlaces de texto explícitos (para quien no reconoce los íconos) */}
+          <div className="flex items-center justify-center gap-2 sm:gap-3 flex-wrap">
+            <a
+              href={MAILTO_URL}
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full glass text-sm text-fg-soft hover:text-cyan hover:shadow-glow transition-all"
+            >
+              <Mail className="w-4 h-4" />
+              Email
+            </a>
+            <a
+              href="https://www.linkedin.com/in/matiasbellido"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full glass text-sm text-fg-soft hover:text-cyan hover:shadow-glow transition-all"
+            >
+              <Linkedin className="w-4 h-4" />
+              LinkedIn
+            </a>
+            <a
+              href="https://github.com/rbellidomatias-spec"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full glass text-sm text-fg-soft hover:text-cyan hover:shadow-glow transition-all"
+            >
+              <Github className="w-4 h-4" />
+              GitHub
+            </a>
+            <a
+              href="https://wa.me/message/RRG5RHLSINR3M1"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full glass text-sm text-fg-soft hover:text-cyan hover:shadow-glow transition-all"
+            >
+              <Phone className="w-4 h-4" />
+              WhatsApp
+            </a>
+          </div>
+        </div>
+
+        <p className="text-center text-sm text-fg-faint mt-10">
+          {t.footer.rights}
+        </p>
+      </div>
     </footer>
   );
 }
