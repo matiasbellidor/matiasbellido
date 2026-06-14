@@ -79,22 +79,23 @@ export default function Experience() {
     return () => carousel.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // DESKTOP: la rueda del mouse sobre el carrusel NO debe moverlo de
-  // costado. Si el gesto es predominantemente vertical (lo normal con
-  // una rueda de mouse), reenviamos ese desplazamiento al scroll de la
-  // PÁGINA y evitamos que el navegador lo convierta en scroll horizontal
-  // del carrusel. El swipe horizontal de trackpad (deltaX) se respeta.
+  // DESKTOP: evita que el carrusel atrape la rueda del mouse.
+  // Cuando el gesto es mayormente vertical, lo bloqueamos en el carrusel
+  // y movemos la página manualmente. CLAVE: desactivamos temporalmente el
+  // `scroll-behavior: smooth` del <html> durante el reenvío, porque ese
+  // smooth peleaba con cada evento de rueda y causaba la traba.
   useEffect(() => {
     const carousel = carouselRef.current;
     if (!carousel) return;
     const handleWheel = (e: WheelEvent) => {
-      // Gesto mayormente vertical → es scroll de página, no de carrusel
-      if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
-        e.preventDefault(); // frena el scroll-x nativo del contenedor
-        window.scrollBy({ top: e.deltaY, behavior: "auto" });
-      }
+      if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return; // horizontal → carrusel
+      e.preventDefault();
+      const html = document.documentElement;
+      const prev = html.style.scrollBehavior;
+      html.style.scrollBehavior = "auto"; // sin smooth: scroll 1:1 con la rueda
+      window.scrollBy(0, e.deltaY);
+      html.style.scrollBehavior = prev;
     };
-    // passive:false es obligatorio para poder usar preventDefault
     carousel.addEventListener("wheel", handleWheel, { passive: false });
     return () => carousel.removeEventListener("wheel", handleWheel);
   }, []);
@@ -142,21 +143,20 @@ export default function Experience() {
           </div>
         </div>
 
-        {/* Scroll container - SOLO horizontal:
-            - touch-action: pan-x → en mobile, los gestos verticales
-              pasan a la página (no se traban en el carrusel); solo el
-              swipe horizontal mueve las tarjetas.
-            - overscroll-behavior-x: contain → el scroll horizontal no
-              rebota ni se filtra al scroll de la página.
-            La rueda del mouse en desktop scrollea la página con
-            normalidad; el carrusel se mueve con las flechas y los dots. */}
+        {/* Scroll container:
+            - DESKTOP: el handler de wheel (arriba) reenvía el gesto
+              vertical a la página, así no te quedás atrapado.
+            - MOBILE: touch-action "pan-x pan-y" permite AMBOS ejes; el
+              navegador decide por la dirección del gesto: swipe horizontal
+              mueve las tarjetas, swipe vertical baja la página. (pan-x solo
+              dejaba el gesto vertical en tierra de nadie y se trababa.)
+            - snap-proximity (no mandatory) → el snap no "agarra" el gesto. */}
         <div ref={carouselRef}
-          className="flex gap-6 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-2 -mx-6 px-6 md:-mx-16 md:px-16"
+          className="flex gap-6 overflow-x-auto snap-x snap-proximity no-scrollbar pb-2 -mx-6 px-6 md:-mx-16 md:px-16"
           style={{
             scrollPaddingLeft: "1.5rem",
-            touchAction: "pan-x",
+            touchAction: "pan-x pan-y",
             overscrollBehaviorX: "contain",
-            overscrollBehaviorY: "auto",
           }}>
           {t.experience.items.map((item, i) => (
             <motion.div
