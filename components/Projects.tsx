@@ -25,13 +25,13 @@ const NEXSTOCK_PRESENTATION_PPT = "/projects/Imagenes/Presentacion - NexStock.pd
 
 // ORDEN del carrusel: NexStock PRIMERO, NutriOps SEGUNDO, Budgents TERCERO (se ven al desplazar)
 const digitalProjectsMeta = [
-  { id: "nexstock", image: "/projects/Imagenes/NexStock.png", proposalUrl: "" },
+  { id: "nexstock", image: "/projects/Imagenes/NexStock.png", proposalUrl: "", imageBg: "#FFFFFF" },
   { id: "nutriops", image: "/projects/Imagenes/solver.png", proposalUrl: NUTRIOPS_PROPOSAL_URL },
   { id: "budgents", image: "/projects/Imagenes/agents.png", proposalUrl: BUDGENTS_PROPOSAL_URL },
 ];
 
 const businessProjectsMeta = [
-  { id: "imports", image: "/projects/Imagenes/Imports.png", proposalUrl: IMPORTS_PROPOSAL_URL },
+  { id: "imports", image: "/projects/Imagenes/Imports.png", proposalUrl: IMPORTS_PROPOSAL_URL, imageBg: "#252629" },
   { id: "asesoramientos", image: "/projects/Imagenes/asesoramientos.png", proposalUrl: "" },
 ];
 
@@ -227,7 +227,7 @@ export default function Projects() {
                   </button>
                 </div>
                 <div className="overflow-y-auto">
-                  <div className="relative w-full bg-black flex items-center justify-center" style={{ minHeight: "250px", maxHeight: "55vh" }}>
+                  <div className="relative w-full flex items-center justify-center" style={{ minHeight: "250px", maxHeight: "55vh", backgroundColor: expandedProject.imageBg ?? "#000000" }}>
                     <Image src={expandedProject.image} alt={expandedProject.title} fill quality={90} sizes="(max-width: 1024px) 100vw, 1024px" className="object-contain" priority />
                   </div>
                   <div className="p-6 md:p-12">
@@ -323,7 +323,7 @@ export default function Projects() {
 }
 
 type ProjectCardProps = {
-  project: { id: string; image: string; date: string; category: string; title: string; desc: string; tags: string[]; proposalUrl: string };
+  project: { id: string; image: string; date: string; category: string; title: string; desc: string; tags: string[]; proposalUrl: string; imageBg?: string };
   index: number;
   onClick: () => void;
   lang: string;
@@ -342,10 +342,18 @@ function ProjectCard({ project, index, onClick, lang, onAsesoramientosClick, onN
     <motion.article {...motionProps} onClick={onClick}
       className="relative glass rounded-2xl overflow-hidden flex flex-col group flex-1 w-full cursor-pointer hover:shadow-glow transition-shadow touch-manipulation">
       <ProposalButton projectId={project.id} url={project.proposalUrl} lang={lang} onAsesoramientosClick={onAsesoramientosClick} onNexstockClick={onNexstockClick} />
-      <div className="relative aspect-[16/9] overflow-hidden bg-black">
+      <div
+        className="relative aspect-[16/9] overflow-hidden flex items-center justify-center"
+        style={{ backgroundColor: project.imageBg ?? "#000000" }}
+      >
         <Image src={project.image} alt={project.title} fill quality={80} loading="lazy" sizes="(max-width: 1024px) 100vw, 50vw"
           className={`${containedImage ? "object-contain" : "object-cover"} transition-transform duration-700 group-hover:scale-105`} />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+        {/* El degradé oscuro solo tiene sentido sobre fondo oscuro (imágenes
+            cover). Sobre un imageBg claro se vería como una sombra gris fea,
+            así que lo omitimos cuando hay un fondo personalizado. */}
+        {!project.imageBg && (
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+        )}
       </div>
       <div className="p-6 flex flex-col flex-1">
         <p className="text-[10px] uppercase tracking-[0.2em] text-fg-muted mb-2">{project.date} - {project.category}</p>
