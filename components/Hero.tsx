@@ -139,7 +139,7 @@ export default function Hero() {
             </Magnetic>
             <Magnetic strength={0.45}>
               <a
-                href="https://github.com/rbellidomatias-spec"
+                href="https://github.com/matiasbellidor"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="GitHub"
