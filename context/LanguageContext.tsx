@@ -41,6 +41,7 @@ type EducationItem = {
   institution: string;
   degree: string;
   desc: string;
+  descBullets?: string[];
   longDesc: string;
 };
 
@@ -79,7 +80,7 @@ type Dict = {
     experienceTitle: string;
     educationTitle: string;
     coursesTitle: string;
-    courses: string[];
+    courses: { category: string; items: string[] }[];
     items: ExperienceItem[];
     education: EducationItem[];
   };
@@ -218,6 +219,10 @@ export const translations: Record<Lang, Dict> = {
           institution: "Universidad de Buenos Aires",
           degree: "Actuario - Actuarial Science",
           desc: "Foco académico en Métodos Cuantitativos, Estadística Matemática y Macroeconomía. Investigación independiente en Data Science y aplicación de algoritmos (Python/R) a modelos actuariales.",
+          descBullets: [
+            "Matemática Aplicada I: Desarrollo de algoritmo en Python (NumPy) para el cálculo automatizado de autovalores y autovectores.",
+            "Sistemas Administrativos: Consultoría de procesos, rediseño de circuitos de abastecimiento y gestión de riesgos en Empresa B certificada.",
+          ],
           longDesc:
             "Foco académico en Métodos Cuantitativos, Estadística Matemática y Macroeconomía. Investigación independiente en Data Science y aplicación de algoritmos (Python/R) a modelos actuariales. Enfoque en la integración de modelos matemáticos con herramientas computacionales y análisis de procesos de negocio.\n\nProyecto Destacado: Matemática Aplicada I (Modelado Computacional)\n• Desarrollo de algoritmo en Python utilizando la librería NumPy para el cálculo automatizado de autovalores y autovectores.\n• Implementación práctica de conceptos de Álgebra Lineal para optimizar el análisis de matrices y sistemas de ecuaciones.\n\nProyecto Destacado: Sistemas Administrativos (Caso Real: Dar Sentido S.R.L.)\n• Consultoría de Procesos: Diagnóstico y rediseño del circuito de Abastecimiento/Compras en una Empresa B certificada, utilizando diagramas de interdependencia sectorial.\n• Gestión de Riesgos y Control Interno: Detección de falencias en la segregación de funciones y diseño de un nuevo marco de control preventivo y documental.\n• Análisis Organizacional: Evaluación de la estructura y mecanismos de coordinación para optimizar la toma de decisiones estratégicas.",
         },
@@ -225,24 +230,60 @@ export const translations: Record<Lang, Dict> = {
           period: "Mar 2018 - Nov 2023",
           institution: "Colegio Santa Teresa de Jesús",
           degree: "Bachiller en Ciencias Sociales y Humanidades",
-          desc: "Formación humanista centrada en el pensamiento crítico y la conciencia social. Voluntariado en TECHO, deportes y actividades de acción social.",
+          desc: "Formación humanista centrada en el pensamiento crítico y la conciencia social. Desarrollo de habilidades fundamentales que complementan mi formación técnica.",
+          descBullets: [
+            "Iniciativa y Ventas: Gestión y liderazgo en ventas para financiamiento colectivo, asegurando el cumplimiento de objetivos grupales.",
+            "Voluntariado y Liderazgo: Participación activa en proyectos sociales (TECHO), desarrollando adaptabilidad, trabajo en equipo y gestión de recursos bajo presión.",
+          ],
           longDesc:
             "Formación humanista centrada en el pensamiento crítico y la conciencia social. Voluntariado en TECHO, deportes y actividades de acción social. Desarrollo de habilidades fundamentales que hoy complemento con mi formación técnica en Actuario y Ciencia de Datos.\n\nIniciativa y Ventas:\n• Para costear el viaje de egresados, me encargué de la venta de productos (tortas, rifas).\n• No me limité a vender mi parte; me ofrecí a gestionar y vender los productos de algunos compañeros para asegurar que todos llegaran al objetivo.\n• Fue mi primer contacto real con la venta y el trato con la gente.\n\nVoluntariado y Liderazgo:\n• Participación activa en proyectos sociales (TECHO).\n• Desarrollo de habilidades de trabajo en equipo, adaptabilidad en terreno y gestión de recursos bajo presión.\n\nHabilidades Blandas:\n• Comunicación efectiva y empatía como bases que hoy complemento con la formación técnica.",
         },
       ],
       courses: [
-        "Introduction to Model Context Protocol - Anthropic",
-        "Claude Platform 101 - Anthropic",
-        "Claude Code in Action - Anthropic",
-        "Data Science Intro - Santander Open Academy",
-        "Finanzas - FEMSA",
-        "Gestión Agile - Santander Open Academy",
-        "Claude Code 101 - Anthropic",
-        "Introduction to Claude Cowork - Anthropic",
-        "Negociación - Santander Open Academy",
-        "Storytelling - Santander Open Academy",
-        "Claude 101: Everyday Work Tasks - Anthropic",
-        "AI Fluency for Educators - Anthropic",
+        {
+          category: "Ingeniería y Arquitectura de IA Avanzada",
+          items: [
+            "Model Context Protocol (MCP): Advanced Topics - Anthropic",
+            "Introduction to Model Context Protocol - Anthropic",
+            "Introduction to Agent Skills - Anthropic",
+            "Introduction to Subagents - Anthropic",
+          ],
+        },
+        {
+          category: "Data Science y Rigor Cuantitativo",
+          items: [
+            "Data Science Methodology - IBM",
+            "Data Science Tools - IBM",
+            "Data Science Intro - Santander Open Academy",
+          ],
+        },
+        {
+          category: "IA Aplicada y Flujos de Desarrollo",
+          items: [
+            "Claude Code in Action - Anthropic",
+            "Claude Code 101 - Anthropic",
+            "Claude Platform 101 - Anthropic",
+          ],
+        },
+        {
+          category: "Fluidez en IA y Frameworks de Interacción",
+          items: [
+            "AI Fluency: Framework & Foundations - Anthropic",
+            "AI Fluency for Students - Anthropic",
+            "AI Fluency for Educators - Anthropic",
+            "Introduction to Claude Cowork - Anthropic",
+            "Claude 101: Everyday Work Tasks - Anthropic",
+          ],
+        },
+        {
+          category: "Estrategia de Negocios y Liderazgo",
+          items: [
+            "Finanzas - FEMSA",
+            "Gestión Agile - Santander Open Academy",
+            "Negociación - Santander Open Academy",
+            "Storytelling - Santander Open Academy",
+          ],
+        },
       ],
     },
 
@@ -422,6 +463,10 @@ export const translations: Record<Lang, Dict> = {
           institution: "University of Buenos Aires",
           degree: "Actuarial Science",
           desc: "Academic focus on Quantitative Methods, Mathematical Statistics, and Macroeconomics. Independent research in Data Science and the application of algorithms (Python/R) to actuarial models.",
+          descBullets: [
+            "Applied Mathematics I: Developed a Python algorithm (NumPy) for the automated calculation of eigenvalues and eigenvectors.",
+            "Administrative Systems: Process consulting, redesign of supply chain circuits, and risk management at a certified B Corp.",
+          ],
           longDesc:
             "Academic focus on Quantitative Methods, Mathematical Statistics, and Macroeconomics. Independent research in Data Science and the application of algorithms (Python/R) to actuarial models. Focus on the integration of mathematical models with computational tools and business process analysis.\n\nFeatured Project: Applied Mathematics I (Computational Modeling)\n• Development of a Python algorithm using the NumPy library for the automated calculation of eigenvalues and eigenvectors.\n• Practical implementation of Linear Algebra concepts to optimize matrix and equation system analysis.\n\nFeatured Project: Administrative Systems (Real Case: Dar Sentido S.R.L.)\n• Process Consulting: Diagnosis and redesign of the Procurement circuit at a certified B Corp, using sectoral interdependence diagrams.\n• Risk Management and Internal Control: Detection of weaknesses in segregation of duties and design of a new preventive and documentary control framework.\n• Organizational Analysis: Evaluation of structure and coordination mechanisms to optimize strategic decision-making.",
         },
@@ -429,24 +474,60 @@ export const translations: Record<Lang, Dict> = {
           period: "Mar 2018 - Nov 2023",
           institution: "Santa Teresa de Jesús School",
           degree: "High School Diploma in Social Sciences and Humanities",
-          desc: "Humanist education centered on critical thinking and social awareness. Volunteering at TECHO, sports, and social action activities.",
+          desc: "Humanist education centered on critical thinking and social awareness. Development of foundational skills that complement my technical training.",
+          descBullets: [
+            "Initiative and Sales: Management and leadership in sales for collective fundraising, ensuring group goals were met.",
+            "Volunteering and Leadership: Active participation in social projects (TECHO), developing adaptability, teamwork, and resource management under pressure.",
+          ],
           longDesc:
             "Humanist education centered on critical thinking and social awareness. Volunteering at TECHO, sports, and social action activities. Development of foundational skills that I now complement with my technical training in Actuarial Science and Data Science.\n\nInitiative and Sales:\n• To pay for the senior class trip, I took charge of selling products (cakes, raffles).\n• I didn't limit myself to selling my own share; I offered to manage and sell my classmates' products to ensure everyone reached the goal.\n• It was my first real contact with sales and dealing with people.\n\nVolunteering and Leadership:\n• Active participation in social projects (TECHO).\n• Development of teamwork skills, field adaptability, and resource management under pressure.\n\nSoft Skills:\n• Effective communication and empathy as foundations that I now complement with technical training.",
         },
       ],
       courses: [
-        "Introduction to Model Context Protocol - Anthropic",
-        "Claude Platform 101 - Anthropic",
-        "Claude Code in Action - Anthropic",
-        "Data Science Intro - Santander Open Academy",
-        "Finance - FEMSA",
-        "Agile Management - Santander Open Academy",
-        "Claude Code 101 - Anthropic",
-        "Introduction to Claude Cowork - Anthropic",
-        "Negotiation - Santander Open Academy",
-        "Storytelling - Santander Open Academy",
-        "Claude 101: Everyday Work Tasks - Anthropic",
-        "AI Fluency for Educators - Anthropic",
+        {
+          category: "Advanced AI Engineering & Architecture",
+          items: [
+            "Model Context Protocol (MCP): Advanced Topics - Anthropic",
+            "Introduction to Model Context Protocol - Anthropic",
+            "Introduction to Agent Skills - Anthropic",
+            "Introduction to Subagents - Anthropic",
+          ],
+        },
+        {
+          category: "Data Science & Quantitative Rigor",
+          items: [
+            "Data Science Methodology - IBM",
+            "Data Science Tools - IBM",
+            "Data Science Intro - Santander Open Academy",
+          ],
+        },
+        {
+          category: "Applied AI & Development Workflows",
+          items: [
+            "Claude Code in Action - Anthropic",
+            "Claude Code 101 - Anthropic",
+            "Claude Platform 101 - Anthropic",
+          ],
+        },
+        {
+          category: "AI Fluency & Interaction Frameworks",
+          items: [
+            "AI Fluency: Framework & Foundations - Anthropic",
+            "AI Fluency for Students - Anthropic",
+            "AI Fluency for Educators - Anthropic",
+            "Introduction to Claude Cowork - Anthropic",
+            "Claude 101: Everyday Work Tasks - Anthropic",
+          ],
+        },
+        {
+          category: "Business Strategy & Leadership",
+          items: [
+            "Finance - FEMSA",
+            "Agile Management - Santander Open Academy",
+            "Negotiation - Santander Open Academy",
+            "Storytelling - Santander Open Academy",
+          ],
+        },
       ],
     },
     projects: {

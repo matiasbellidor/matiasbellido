@@ -22,7 +22,7 @@ export default function Bio() {
     {
       number: "02",
       title: t.bio.categories.ai,
-      skills: ["Claude w/ OpenClaw", "N8N & Make", "APIs / Webhooks"],
+      skills: ["N8N & Make", "APIs / Webhooks"],
     },
     {
       number: "03",
