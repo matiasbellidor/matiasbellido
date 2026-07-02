@@ -308,7 +308,7 @@ export const translations: Record<Lang, Dict> = {
       },
 
       oneiric: {
-        date: "Junio 2026",
+        date: "Julio 2026",
         category: "Hackathon · SideQuest 1er edición",
         title: "OneiricAi",
         desc: "Desarrollado en solo 4 horas durante la primera edición del hackathon SideQuest. OneiricAi nace de un problema que todos conocemos: casi todo lo que soñamos se borra a los pocos minutos de despertar, y con eso se pierden ideas, escenas y recuerdos que nos gustaría conservar.\n\nLa plataforma integra IA para reconstruir tus sueños en formato de video a partir del contexto que vos le aportás, es decir, los fragmentos que sí recordás al despertar. Esa información se combina con patrones biológicos como la frecuencia cardíaca y los ciclos de sueño, medidos a lo largo de la noche por dispositivos wearable como el Apple Watch.\n\nEse cruce entre tu relato y tus datos biológicos es lo que hace única a la propuesta: el video generado no es una invención, es una reconstrucción respaldada por lo que tu cuerpo registró esa noche. Esos videos se pueden publicar directamente desde la aplicación en la red social integrada de Oneiric o compartirlos en plataformas como TikTok e Instagram. La diferencia clave con el resto de las redes sociales es que acá no se puede mentir ni aparentar: cada video está anclado a datos biológicos reales, lo que elimina las falsas apariencias. Por eso la llamamos 'The Healthy Social Network'.",
@@ -559,7 +559,7 @@ export const translations: Record<Lang, Dict> = {
       },
 
       oneiric: {
-        date: "Jul 2026",
+        date: "July 2026",
         category: "Hackathon · SideQuest 1st edition",
         title: "OneiricAi",
         desc: "Built in just 4 hours during the first edition of the SideQuest hackathon. OneiricAi was born from a problem we all know: almost everything we dream fades within minutes of waking up, and with it we lose ideas, scenes, and memories we would love to keep.\n\nThe platform integrates AI to reconstruct your dreams in video format from the context you provide, meaning the fragments you do remember when you wake up. That information is combined with biological patterns such as heart rate and sleep cycles, measured throughout the night by wearable devices like the Apple Watch.\n\nThat merge between your story and your biological data is what makes the product unique: the generated video is not an invention, it is a reconstruction backed by what your body recorded that night. These videos can be published directly from the app on Oneiric's built-in social network or shared to platforms like TikTok and Instagram. The key difference from other social networks is that you cannot lie or fake appearances here: every video is anchored to real biological data, which eliminates superficiality. That is why we call it 'The Healthy Social Network'.",
