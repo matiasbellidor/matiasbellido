@@ -559,7 +559,7 @@ export const translations: Record<Lang, Dict> = {
       },
 
       oneiric: {
-        date: "June 2026",
+        date: "Jul 2026",
         category: "Hackathon · SideQuest 1st edition",
         title: "OneiricAi",
         desc: "Built in just 4 hours during the first edition of the SideQuest hackathon. OneiricAi was born from a problem we all know: almost everything we dream fades within minutes of waking up, and with it we lose ideas, scenes, and memories we would love to keep.\n\nThe platform integrates AI to reconstruct your dreams in video format from the context you provide, meaning the fragments you do remember when you wake up. That information is combined with biological patterns such as heart rate and sleep cycles, measured throughout the night by wearable devices like the Apple Watch.\n\nThat merge between your story and your biological data is what makes the product unique: the generated video is not an invention, it is a reconstruction backed by what your body recorded that night. These videos can be published directly from the app on Oneiric's built-in social network or shared to platforms like TikTok and Instagram. The key difference from other social networks is that you cannot lie or fake appearances here: every video is anchored to real biological data, which eliminates superficiality. That is why we call it 'The Healthy Social Network'.",
